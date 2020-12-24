@@ -1,0 +1,3 @@
+[tool.coverage.run]
+source = ["renjuu"]
+omit = ["*/__main__.py", "venv/*", "setup.py", "./pytest_cache/*"]
