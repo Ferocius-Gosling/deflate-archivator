@@ -33,6 +33,38 @@ def test_encode(data, expected):
     assert encoded == expected
 
 
+def test_encode_length_over_255():
+    lz77_codec = LZ77Codec(256)
+    data = bytes(261)
+    encoded = lz77_codec.encode(data)
+    assert encoded == [Codeword(0, 0, 0), Codeword(1, 255, 0),
+                       Codeword(2, 3, 0)]
+
+
+def test_encode_length_over_512():
+    lz77_codec = LZ77Codec(256)
+    data = bytes(555)
+    encoded = lz77_codec.encode(data)
+    assert encoded == [Codeword(0, 0, 0), Codeword(1, 255, 0),
+                       Codeword(2, 255, 0), Codeword(3, 41, 0)]
+
+
+def test_decode_length_over_255():
+    lz77_codec = LZ77Codec(256)
+    data_to_encode = [Codeword(0, 0, 0), Codeword(1, 255, 0),
+                      Codeword(2, 3, 0)]
+    decoded = lz77_codec.decode(data_to_encode)
+    assert decoded == bytes(261)
+
+
+def test_decode_length_over_512():
+    lz77_codec = LZ77Codec(256)
+    data_to_encode = [Codeword(0, 0, 0), Codeword(1, 255, 0),
+                       Codeword(2, 255, 0), Codeword(3, 41, 0)]
+    decoded = lz77_codec.decode(data_to_encode)
+    assert decoded == bytes(555)
+
+
 @pytest.mark.parametrize('data, expected',
                          [([Codeword(0, 0, 97), Codeword(0, 0, 98),
                            Codeword(0, 0, 114), Codeword(3, 1, 99),

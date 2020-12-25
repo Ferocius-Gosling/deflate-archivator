@@ -9,8 +9,8 @@ def parse_args():
 
     compress = subparsers.add_parser('compress', help='compress file')
     compress.set_defaults(command='cmopress')
-    compress.add_argument('archivename', help='Archive name', nargs='?')
     compress.add_argument('file', help='File you want to archive', nargs='?')
+    compress.add_argument('archivename', help='Archive name', nargs='?')
 
     decompress = subparsers.add_parser('decompress', help='Decompress archive')
     decompress.set_defaults(command='decompress')
