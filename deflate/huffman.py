@@ -1,8 +1,9 @@
 import heapq
 import collections
-from hashlib import sha1
+from hashlib import md5
 from bitarray import bitarray
 from typing import Optional, DefaultDict
+from deflate import errors
 
 
 class Node:
@@ -82,12 +83,11 @@ class HuffmanCodec:
         codes_table = self.collect_codes_from_tree(tree)
         encoded_data = bitarray()
         encoded_data.encode(codes_table, data_to_encode)
-        print(encoded_data)
         return encoded_data
 
     @staticmethod
     def count_checksum(data: bytes):
-        return sha1(data).digest()
+        return md5(data).digest()
 
     def decode(self, codes_table: dict, encoded_data: bytes, checksum: bytes,
                skip_length: int):
@@ -102,5 +102,5 @@ class HuffmanCodec:
         decoded_data = decoded_data[:skip_length]
         decoded_data_bytes = bytes(decoded_data.decode(bit_code_table))
         if self.count_checksum(decoded_data_bytes) != checksum:
-            raise IOError()
+            raise errors.WrongChecksumError()
         return decoded_data_bytes

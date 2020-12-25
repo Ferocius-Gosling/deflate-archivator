@@ -62,12 +62,24 @@ def test_count_weights(huffman_codec, data, expected):
     assert weights == expected
 
 
-@pytest.mark.parametrize('data, codes, expected',
+@pytest.mark.parametrize('data, codes, checksum, skip, expected',
                          [(bytes(bitarray([1, 1, 0, 0, 0, 0,
                                            1, 0, 1, 1, 1, 1])),
                            {116: '11', 101: '0', 115: '10'},
-                           )])
-def test_decode(huffman_codec: HuffmanCodec, data, codes, expected):
-    decoded_data = huffman_codec.decode(codes, data, b'\x00', 0)
+                           b"(\x88d^\xd9'@J\xa7+\xb6\x0c\x0c\xe7\x0e\x80", 12,
+                           b'teeeestt'),
+                          (bytes(bitarray([1, 1, 1, 1, 1])),
+                           {97: '1'}, b'YO\x80;8\nA9n\xd6=\xca9P5B', 5,
+                           b'aaaaa'),
+                          (bytes(bitarray([1, 1, 0, 1, 0, 1,
+                                           1, 1, 0, 1, 0, 0])),
+                           {65: '110', 66: '10', 67: '111',
+                            68: '01', 69: '00'},
+                           b'.\xcd\xde9Y\x05\x1d\x91?a\xb1Ey\xea\x13m', 12,
+                           b'ABCDE')
+                          ])
+def test_decode(huffman_codec: HuffmanCodec, data, codes, checksum, skip,
+                expected):
+    decoded_data = huffman_codec.decode(codes, data, checksum, skip)
     assert decoded_data == expected
 
