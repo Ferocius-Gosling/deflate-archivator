@@ -28,9 +28,8 @@ class HuffmanCodec:
     def encode(self, data: bytes):
         weights_nodes = self.count_weights(data)
         tree = self.create_tree(weights_nodes)
-        encoded_data = self.__encode(tree, data)
-        checksum = self.count_checksum(data)
-        return encoded_data, checksum
+        encoded_data, codes_table = self.__encode(tree, data)
+        return encoded_data, codes_table
 
     @staticmethod
     def count_weights(data: bytes):
@@ -83,7 +82,7 @@ class HuffmanCodec:
         codes_table = self.collect_codes_from_tree(tree)
         encoded_data = bitarray()
         encoded_data.encode(codes_table, data_to_encode)
-        return encoded_data
+        return encoded_data, codes_table
 
     @staticmethod
     def count_checksum(data: bytes):
@@ -96,11 +95,9 @@ class HuffmanCodec:
             bits = bitarray()
             for bit in codes_table[key]:
                 bits.append(int(bit))
-            bit_code_table[key] = bits
+            bit_code_table[int(key)] = bits
         decoded_data = bitarray()
         decoded_data.frombytes(encoded_data)
         decoded_data = decoded_data[:skip_length]
         decoded_data_bytes = bytes(decoded_data.decode(bit_code_table))
-        if self.count_checksum(decoded_data_bytes) != checksum:
-            raise errors.WrongChecksumError()
         return decoded_data_bytes

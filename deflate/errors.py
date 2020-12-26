@@ -12,3 +12,11 @@ class CodewordNotInWindowError(BaseDeflateError):
 
 class CodewordOffsetNegativeError(BaseDeflateError):
     message = 'Codeword offset negative, cannot be decompressed'
+
+
+class NotArchiveError(BaseDeflateError):
+    message = 'File extension is not .dfa'
+
+
+class BrokenArchiveError(BaseDeflateError):
+    message = 'Unable to decode data'

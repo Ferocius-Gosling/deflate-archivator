@@ -34,25 +34,18 @@ class LZ77Codec:
         position = 0
         while position < len(data):
             codeword = self.codeword_for_position(position)
-            print(bytes([codeword.char]), 'offset', codeword.offset, 'length', codeword.length)
             position += len(codeword)
             while codeword.length > self.sliding_window_length:
                 codeword_split = Codeword(codeword.offset,
-                                    self.sliding_window_length - 1,
-                                    codeword.char)
-                codeword = Codeword(codeword.offset + 1,
-                                          codeword.length -
-                                          self.sliding_window_length,
+                                          self.sliding_window_length - 1,
                                           codeword.char)
+                codeword = Codeword(codeword.offset + 1,
+                                    codeword.length -
+                                    self.sliding_window_length,
+                                    codeword.char)
                 encoded_data.append(codeword_split)
-                # if codeword.length < self.sliding_window_length:
-                #     encoded_data.append(codeword)
-                #     print('append encoded', codeword.char, codeword.length)
-                print(bytes([codeword_split.char]), 'offset', codeword_split.offset, 'length', codeword_split.length)
-                print(bytes([codeword.char]), 'offset', codeword.offset, 'length', codeword.length)
                 continue
             encoded_data.append(codeword)
-        print(encoded_data)
         return encoded_data
 
     def codeword_for_position(self, position: int):
@@ -74,9 +67,7 @@ class LZ77Codec:
 
     def find_matching(self, pattern_position: int, matching_position: int):
         match_length = 0
-        while matching_position + match_length + 1 < len(self.buffer): # \
-                # and matching_position + match_length + 1 \
-                # < self.sliding_window_length:
+        while matching_position + match_length + 1 < len(self.buffer):
             if self.buffer[pattern_position + match_length] \
                     != self.buffer[matching_position + match_length]:
                 break
