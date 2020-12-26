@@ -48,7 +48,6 @@ class Decompressor:
 
     @staticmethod
     def _get_codewords_from_bytes(data: bytes):
-        print(len(data))
         if len(data) % 3 != 0:
             raise errors.BrokenArchiveError()
         codewords = []

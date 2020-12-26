@@ -1,5 +1,6 @@
 import json
 import struct
+import time
 from datetime import datetime
 from pathlib import Path
 from bitarray import bitarray
@@ -10,6 +11,7 @@ from deflate.lz77 import LZ77Codec
 class Compressor:
 
     def compress(self, data: bytes, filename: str):
+        start = time.perf_counter()
         compressed_data = bytearray()
         lz77_codec = LZ77Codec(256)
         huffman_codec = HuffmanCodec()
@@ -25,7 +27,13 @@ class Compressor:
         compressed_data.extend(struct.pack('H', len(filename)))
         compressed_data.extend(filename.encode())
         compressed_data.extend(packed_data)
-        return compressed_data
+        end = time.perf_counter()
+        time_duration = end - start
+        return compressed_data, time_duration
+
+    @staticmethod
+    def calculate_compress_ratio(original_size, compressed_size):
+        return (1 - compressed_size / original_size) * 100
 
     @staticmethod
     def _pack_data(encoded_data: bitarray, checksum: bytes,
@@ -35,7 +43,7 @@ class Compressor:
         serialized_table = json.dumps({int(i): codes_table[i].to01()
                                        for i in codes_table}).encode()
         # пока пусть так, можно будет сохранять сразу просто
-        # длины кодов и потом декодить по длинам
+        # длины кодов и потом декодить по длинама
         packed_data.extend(struct.pack('I', len(serialized_table)))
         packed_data.extend(serialized_table)
         packed_data.extend(struct.pack('I', len(encoded_data)))

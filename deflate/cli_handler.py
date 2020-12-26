@@ -8,8 +8,13 @@ class CLIHandler:
     def compress(archive_name: str, filename: str):
         compressor = Compressor()
         data = compressor.read_from_file(filename)
-        encoded_data = compressor.compress(data, filename)
+        encoded_data, time = compressor.compress(data, filename)
         compressor.write_archive(archive_name, encoded_data)
+        print('Compress ratio is',
+              compressor.calculate_compress_ratio(len(data),
+                                                  len(encoded_data)),
+              '%')
+        print('Time for compress is ', time)
         print('Archive created successfully')
 
     @staticmethod
