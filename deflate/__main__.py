@@ -1,6 +1,5 @@
 import argparse
-from deflate.compressor import Compressor
-from deflate.decompressor import Decompressor
+from deflate.cli_handler import CLIHandler
 
 
 def parse_args():
@@ -8,7 +7,7 @@ def parse_args():
     subparsers = parser.add_subparsers()
 
     compress = subparsers.add_parser('compress', help='compress file')
-    compress.set_defaults(command='cmopress')
+    compress.set_defaults(command='compress')
     compress.add_argument('file', help='File you want to archive', nargs='?')
     compress.add_argument('archivename', help='Archive name', nargs='?')
 
@@ -20,11 +19,12 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
+    cli_handler = CLIHandler()
     if 'command' not in args:
         print('Usage: deflate [-h] {compress, decompress}')
         exit(1)
     command = args.pop('command')
     if command == 'compress':
-        compressor = Compressor()
+        cli_handler.compress(args['archivename'], args['file'])
     else:
-        decompressor = Decompressor()
+        cli_handler.decompress(args['archive'])

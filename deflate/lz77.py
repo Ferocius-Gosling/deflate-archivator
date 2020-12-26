@@ -54,7 +54,8 @@ class LZ77Codec:
         start_offset = 1
         start_position = position - start_offset
 
-        while start_offset < self.sliding_window_length and start_position >= 0:
+        while start_offset < self.sliding_window_length and \
+                start_position >= 0:
             match_length = self.find_matching(start_position, position)
             if match_length > longest_match_length:
                 longest_match_length = match_length
@@ -89,5 +90,3 @@ class LZ77Codec:
                     position += 1
             buffer += bytes([codeword.char])
         return buffer
-
-

@@ -1,9 +1,7 @@
 import json
 import struct
-from datetime import datetime
 from pathlib import Path
 from deflate import const
-from bitarray import bitarray
 from deflate.huffman import HuffmanCodec
 from deflate.lz77 import LZ77Codec, Codeword
 from deflate import errors
@@ -30,7 +28,8 @@ class Decompressor:
         code_table_length = struct.unpack('I',
                                           data[offset:
                                                offset +
-                                               const.offsets['unsigned_int']])[0]
+                                               const.offsets
+                                               ['unsigned_int']])[0]
         offset += const.offsets['unsigned_int']
         code_table = json.loads(data[offset: offset +
                                      code_table_length].decode())
@@ -64,4 +63,3 @@ class Decompressor:
     def write_file(file: Path, data: bytes):
         file = Path.cwd() / file
         file.write_bytes(data)
-

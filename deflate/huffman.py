@@ -3,7 +3,6 @@ import collections
 from hashlib import md5
 from bitarray import bitarray
 from typing import Optional, DefaultDict
-from deflate import errors
 
 
 class Node:
