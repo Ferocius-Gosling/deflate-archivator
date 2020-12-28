@@ -4,5 +4,5 @@ venv
 .coverage
 */__pycache__*
 *.dfa
-*.txt
+text.txt
 *.png
