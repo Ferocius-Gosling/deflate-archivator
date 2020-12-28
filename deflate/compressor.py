@@ -22,7 +22,8 @@ class Compressor:
             codewords_bytes.append(codeword.offset)
             codewords_bytes.append(codeword.length)
             codewords_bytes.append(codeword.char)
-        encoded_data, codes_table = huffman_codec.encode(bytes(codewords_bytes))
+        encoded_data, codes_table = \
+            huffman_codec.encode(bytes(codewords_bytes))
         packed_data = self._pack_data(encoded_data, checksum, codes_table)
         compressed_data.extend(struct.pack('H', len(filename)))
         compressed_data.extend(filename.encode())

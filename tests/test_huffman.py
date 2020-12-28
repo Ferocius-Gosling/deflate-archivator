@@ -35,7 +35,8 @@ def test_encode(huffman_codec: HuffmanCodec, data, expected):
                                                         67: bitarray([1, 1,
                                                                       1]),
                                                         68: bitarray([0, 1]),
-                                                        69: bitarray([0, 0])})])
+                                                        69: bitarray([0, 0])
+                                                        })])
 def test_collect_codes(huffman_codec: HuffmanCodec, data, expected):
     weights = huffman_codec.count_weights(data)
     tree = huffman_codec.create_tree(weights)
@@ -82,4 +83,3 @@ def test_decode(huffman_codec: HuffmanCodec, data, codes, checksum, skip,
                 expected):
     decoded_data = huffman_codec.decode(codes, data, checksum, skip)
     assert decoded_data == expected
-
