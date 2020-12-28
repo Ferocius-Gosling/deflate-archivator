@@ -39,7 +39,7 @@ def test_compress_and_decompress_file(compressor, decompressor, archive_name,
     assert data_from_file is not None
     assert isinstance(data_from_file, bytes)
     encoded_data = compressor.compress(data_from_file, filename)
-    compressor.write_archive(archive_name, encoded_data)
+    compressor.write_archive(archive_name, encoded_data[0])
     assert (Path.cwd() / (archive_name + '.dfa')).exists()
     delete_file(filename)
     data_to_decode = decompressor.read_from_archive(archive_name + '.dfa')

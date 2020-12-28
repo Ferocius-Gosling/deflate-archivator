@@ -17,12 +17,12 @@ class Compressor:
         huffman_codec = HuffmanCodec()
         checksum = huffman_codec.count_checksum(data)
         codewords = lz77_codec.encode(data)
-        codewords_bytes = b''
+        codewords_bytes = bytearray()
         for codeword in codewords:
-            codewords_bytes += bytes([codeword.offset])
-            codewords_bytes += bytes([codeword.length])
-            codewords_bytes += bytes([codeword.char])
-        encoded_data, codes_table = huffman_codec.encode(codewords_bytes)
+            codewords_bytes.append(codeword.offset)
+            codewords_bytes.append(codeword.length)
+            codewords_bytes.append(codeword.char)
+        encoded_data, codes_table = huffman_codec.encode(bytes(codewords_bytes))
         packed_data = self._pack_data(encoded_data, checksum, codes_table)
         compressed_data.extend(struct.pack('H', len(filename)))
         compressed_data.extend(filename.encode())
