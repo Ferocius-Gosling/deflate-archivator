@@ -1,6 +1,5 @@
 import json
 import struct
-import time
 from datetime import datetime
 from pathlib import Path
 from bitarray import bitarray
@@ -9,10 +8,37 @@ from deflate.lz77 import LZ77Codec
 
 
 class Compressor:
-
-    def compress(self, data: bytes, filename: str):
-        start = time.perf_counter()
+    def compress(self, archive_name: str, pathname: str):
         compressed_data = bytearray()
+        compressed_data.extend(struct.pack('H', len(pathname)))
+        compressed_data.extend(pathname.encode())
+        self.write_archive(archive_name, compressed_data)
+        # todo сделай длину блока в compress_and_pack
+        size = 32768
+        file_size = Path(pathname).stat().st_size
+        summary_encoded_length = 0
+        with open(pathname, 'rb+') as file:
+            while size <= file_size:
+                data = file.read(32768)
+                print(size, 'first lap')
+                packed_data = self.__compress_and_pack(data)
+                summary_encoded_length += len(packed_data)
+                size += 32768
+                with open(archive_name + '.dfa', 'ab+') as archive:
+                    archive.write(packed_data)
+            else:
+                data = bytes()
+                if file_size < size:
+                    data = file.read(file_size)
+                else:
+                    data = file.read(file_size - size)
+                packed_data = self.__compress_and_pack(data)
+                summary_encoded_length += len(packed_data)
+                with open(archive_name + '.dfa', 'ab+') as archive:
+                    archive.write(packed_data)
+        return file_size, summary_encoded_length
+
+    def __compress_and_pack(self, data: bytes):
         lz77_codec = LZ77Codec(256)
         huffman_codec = HuffmanCodec()
         checksum = huffman_codec.count_checksum(data)
@@ -25,12 +51,7 @@ class Compressor:
         encoded_data, codes_table = \
             huffman_codec.encode(bytes(codewords_bytes))
         packed_data = self._pack_data(encoded_data, checksum, codes_table)
-        compressed_data.extend(struct.pack('H', len(filename)))
-        compressed_data.extend(filename.encode())
-        compressed_data.extend(packed_data)
-        end = time.perf_counter()
-        time_duration = end - start
-        return compressed_data, time_duration
+        return packed_data
 
     @staticmethod
     def calculate_compress_ratio(original_size, compressed_size):
@@ -43,18 +64,17 @@ class Compressor:
         packed_data.extend(checksum)
         serialized_table = json.dumps({int(i): codes_table[i].to01()
                                        for i in codes_table}).encode()
-        # пока пусть так, можно будет сохранять сразу просто
-        # длины кодов и потом декодить по длинама
         packed_data.extend(struct.pack('I', len(serialized_table)))
         packed_data.extend(serialized_table)
+        # это и есть по сути длина блока
         packed_data.extend(struct.pack('I', len(encoded_data)))
         packed_data.extend(encoded_data.tobytes())
         return bytes(packed_data)
 
-    @staticmethod
-    def read_from_file(filename: str):
-        file = Path.cwd() / filename
-        return file.read_bytes()
+    # @staticmethod
+    # def read_from_file(filename: str):
+    #     file = Path.cwd() / filename
+    #     return file.read_bytes()
 
     @staticmethod
     def write_archive(archive_name: str, encoded_data: bytes):
