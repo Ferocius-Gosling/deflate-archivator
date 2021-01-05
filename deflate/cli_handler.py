@@ -1,3 +1,5 @@
+from typing import List
+
 from deflate.compressor import Compressor
 from deflate.decompressor import Decompressor
 import time
@@ -6,22 +8,22 @@ import time
 class CLIHandler:
 
     @staticmethod
-    def compress(archive_name: str, filename: str):
+    def compress(archive_name: str, files: List[str]):
         compressor = Compressor()
         start = time.perf_counter()
-        source_length, encoded_length = \
-            compressor.compress(archive_name, filename)
+        statistic = \
+            compressor.compress(archive_name, files)
         end = time.perf_counter()
         time_duration = end - start
-        print('Compress ratio is',
-              compressor.calculate_compress_ratio(source_length,
-                                                  encoded_length), '%')
-        print('Time for compress is ', time_duration)
+        for file in statistic:
+            print('Compress ratio for ', file, ' is',
+                  statistic[file].compression_ratio, '%')
+            print('Time duration for ', file, ' is', statistic[file].time)
+        print('Time for full compress is ', time_duration)
         print('Archive created successfully')
 
     @staticmethod
     def decompress(archive_name: str):
         decompressor = Decompressor()
-        offset, filename = decompressor.read_from_archive(archive_name)
-        decompressor.decompress(filename, archive_name, offset)
+        decompressor.decompress(archive_name)
         print('Archive successfully decompressed')

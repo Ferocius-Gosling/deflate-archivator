@@ -8,8 +8,8 @@ def parse_args():
 
     compress = subparsers.add_parser('compress', help='compress file')
     compress.set_defaults(command='compress')
-    compress.add_argument('file', help='File you want to archive', nargs='?')
     compress.add_argument('archivename', help='Archive name', nargs='?')
+    compress.add_argument('files', help='File you want to archive', nargs='+')
 
     decompress = subparsers.add_parser('decompress', help='Decompress archive')
     decompress.set_defaults(command='decompress')
@@ -25,6 +25,6 @@ if __name__ == '__main__':
         exit(1)
     command = args.pop('command')
     if command == 'compress':
-        cli_handler.compress(args['archivename'], args['file'])
+        cli_handler.compress(args['archivename'], args['files'])
     else:
         cli_handler.decompress(args['archive'])

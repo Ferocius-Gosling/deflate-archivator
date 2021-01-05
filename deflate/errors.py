@@ -20,3 +20,7 @@ class NotArchiveError(BaseDeflateError):
 
 class BrokenArchiveError(BaseDeflateError):
     message = 'Unable to decode data'
+
+
+class EmptyFilesError(BaseDeflateError):
+    message = 'Empty files error'
